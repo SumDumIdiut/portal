@@ -29,22 +29,6 @@ const PROJECTS = [
   { id: 'git-forge',     name: 'Git Forge',          cat: 'Web Apps', dir: 'webdev/git-forge',              cmd: 'node',   args: ['server.js'],          url: 'http://localhost:3000',  type: 'web',  desc: 'Local GitHub-style git manager' },
   { id: 'smart-home',    name: 'Smart Home Hub',     cat: 'Web Apps', dir: 'webdev/smart-home-hub/Speaker', cmd: 'python', args: ['server.py'],          url: 'http://localhost:5000',  type: 'web',  desc: 'Smart home dashboard · Spotify · weather' },
 
-  // Python
-  { id: 'bullet-hell',   name: 'Bullet Hell',        cat: 'Python',   dir: 'python/bullet-hell',            cmd: 'python', args: ['Bullet Hell.py'],     type: 'gui', desc: 'Arcade bullet hell shooter' },
-{ id: 'llm-router',    name: 'LLM Router',         cat: 'Python',   dir: 'python/llm-router',             cmd: 'python', args: ['smartformer.py'],     type: 'cli', desc: 'Adaptive LLM weight routing framework' },
-  { id: 'manim',         name: 'Manim Animations',   cat: 'Python',   dir: 'python/manim-animations',       cmd: 'python', args: ['untitled 1.py'],      type: 'cli', desc: 'Mathematical animation renderer' },
-  { id: 'celeste',       name: 'Celeste',            cat: 'Python',   dir: 'python/python-games',           cmd: 'python', args: ['Celeste.py'],         type: 'gui', desc: 'Celeste-inspired platformer' },
-  { id: 'human-bench',   name: 'Human Benchmark',    cat: 'Python',   dir: 'python/python-games',           cmd: 'python', args: ['Human Benchmark.py'], type: 'cli', desc: 'Reaction time & memory benchmarks' },
-  { id: 'ascii-record',  name: 'ASCII Record',       cat: 'Python',   dir: 'python/python-games',           cmd: 'python', args: ['Ascii Record.py'],    type: 'cli', desc: 'ASCII animation recorder' },
-  { id: 'rps-royale',    name: 'RPS Battle Royale',  cat: 'Python',   dir: 'python/rps-battle-royale',      cmd: 'python', args: ['RPSBR.py'],           type: 'gui', desc: 'Rock Paper Scissors physics simulation' },
-  { id: 'terminal-idle', name: 'Terminal Idle',       cat: 'Python',   dir: 'python/terminal-idle',          cmd: 'python', args: ['terminal_idle.py'],   type: 'cli', desc: 'Terminal-based idle/incremental game' },
-  { id: 'power-of-50',   name: 'Power of 50',        cat: 'Python',   dir: 'python/power-of-50',            cmd: 'python', args: ['-m', 'games'],        type: 'gui', desc: 'Multi-game arcade — always reach 50' },
-
-  // C / CUDA
-  { id: 'cuda-compute',  name: 'CUDA Compute',       cat: 'C / CUDA', dir: 'c/cuda-compute',                cmd: IS_WIN ? 'merged.exe' : './merged', args: [], type: 'cli', desc: 'GPU parallel computing with CUDA/OpenCL' },
-
-  // C#
-  { id: 'igtap-editor',  name: 'IGTAP Map Editor',   cat: 'C#',       dir: 'csharp/igtap-map-editor',       type: 'info', desc: 'BepInEx Unity plugin — copy to IGTAP game folder to use' },
 ];
 
 // ── Process registry ──────────────────────────────────────────────────────────

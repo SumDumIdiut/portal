@@ -69,42 +69,13 @@
         Web Apps
         <span class="nav-count" id="cnt-Web Apps">0</span>
       </button>
-      <button class="nav-btn" data-cat="Python" onclick="filterCat('Python',this)">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M9.86 2C8 2 6.5 3.5 6.5 5.36V7H12v.5H4.5C2.6 7.5 1 9.1 1 11v3c0 1.9 1.6 3.5 3.5 3.5H6v-2.14C6 13.5 7.5 12 9.36 12H15c1.8 0 3.36-1.46 3.36-3.36V5.36C18.36 3.46 16.9 2 15.14 2H9.86zM9.5 4.5c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zM18 9h-1.5v2.64C16.5 13.5 15 15 13.14 15H8c-1.8 0-3.36 1.46-3.36 3.36V21.64C4.64 23.54 6.1 22 7.86 22h5.28C15 22 16.5 20.5 16.5 18.64V17H11v-.5h7.5c1.9 0 3.5-1.6 3.5-3.5v-3C22 8.1 20.4 9 18.5 9H18zm-4.5 9.5c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1z"/></svg>
-        Python
-        <span class="nav-count" id="cnt-Python">0</span>
-      </button>
-      <button class="nav-btn" data-cat="C / CUDA" onclick="filterCat('C / CUDA',this)">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M9 3L5 6.99h3V14h2V6.99h3L9 3zm7 14.01V10h-2v7.01h-3L15 21l4-3.99h-3z"/></svg>
-        C / CUDA
-        <span class="nav-count" id="cnt-C / CUDA">0</span>
-      </button>
-      <button class="nav-btn" data-cat="C#" onclick="filterCat('C#',this)">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M11.5 2C6.81 2 3 5.81 3 10.5S6.81 19 11.5 19h.5v3c4.86-2.34 8-7 8-11.5C20 5.81 16.19 2 11.5 2zm1 14.5h-2v-2h2v2zm0-4h-2c0-3.25 3-3 3-5 0-1.1-.9-2-2-2s-2 .9-2 2h-2c0-2.21 1.79-4 4-4s4 1.79 4 4c0 2.5-3 2.75-3 5z"/></svg>
-        C#
-        <span class="nav-count" id="cnt-C#">0</span>
-      </button>
-    </div>
-
-    <div class="sidebar-section">
-      <div class="sidebar-label">Filter by type</div>
-      <button class="type-btn active" data-type="all" onclick="filterType('all',this)">All types</button>
-      <button class="type-btn" data-type="web" onclick="filterType('web',this)">
-        <span class="badge badge-web">WEB</span> Web server
-      </button>
-      <button class="type-btn" data-type="cli" onclick="filterType('cli',this)">
-        <span class="badge badge-cli">CLI</span> Terminal
-      </button>
-      <button class="type-btn" data-type="gui" onclick="filterType('gui',this)">
-        <span class="badge badge-gui">GUI</span> Window
-      </button>
     </div>
 
     <div class="sidebar-bottom">
       <div class="sidebar-label">Quick actions</div>
       <button class="action-btn" onclick="stopAll()">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h12v12H6z"/></svg>
-        Stop all running
+        Stop all
       </button>
     </div>
   </nav>
@@ -157,22 +128,9 @@ let searchQ    = '';
 const runningSet = new Set();
 
 const THUMBS = {
-  'temutalk':      '/thumbs/temutalk.svg',
-  'git-forge':     '/thumbs/git-forge.svg',
-  'smart-home':    '/thumbs/smart-home.svg',
-  'discord-bot':   '/thumbs/discord-bot.svg',
-  'bullet-hell':   '/thumbs/bullet-hell.svg',
-  'cli-journal':   '/thumbs/cli-journal.svg',
-  'llm-router':    '/thumbs/llm-router.svg',
-  'manim':         '/thumbs/manim.svg',
-  'celeste':       '/thumbs/celeste.svg',
-  'human-bench':   '/thumbs/human-bench.svg',
-  'ascii-record':  '/thumbs/ascii-record.svg',
-  'rps-royale':    '/thumbs/rps-royale.svg',
-  'terminal-idle': '/thumbs/terminal-idle.svg',
-  'power-of-50':   '/thumbs/power-of-50.svg',
-  'cuda-compute':  '/thumbs/cuda-compute.svg',
-  'igtap-editor':  '/thumbs/igtap-editor.svg',
+  'temutalk':  '/thumbs/temutalk.svg',
+  'git-forge': '/thumbs/git-forge.svg',
+  'smart-home':'/thumbs/smart-home.svg',
 };
 
 const CAT_COLORS = {
