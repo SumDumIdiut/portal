@@ -24,7 +24,7 @@ const tlsOpts = { cert: fs.readFileSync(CERT_F), key: fs.readFileSync(KEY_F) };
 // ── Project definitions ───────────────────────────────────────────────────────
 const PROJECTS = [
   // Web Apps
-  { id: 'temutalk',      name: 'TemuTalk',          cat: 'Web Apps', dir: 'webdev/temutalk',               cmd: 'node',   args: ['launcher.js'],        url: 'https://localhost:3001', type: 'web',  desc: 'Smart display hub · Spotify · audio casting' },
+  { id: 'temutalk',      name: 'TemuTalk',          cat: 'Web Apps', dir: 'webdev/temutalk',               cmd: 'node',   args: ['server.js'],          url: 'https://localhost:3001', type: 'web',  desc: 'Smart display hub · Spotify · audio casting' },
   { id: 'git-forge',     name: 'Git Forge',          cat: 'Web Apps', dir: 'webdev/git-forge',              cmd: 'node',   args: ['server.js'],          url: 'http://localhost:3000',  type: 'web',  desc: 'Local GitHub-style git manager' },
   { id: 'smart-home',    name: 'Smart Home Hub',     cat: 'Web Apps', dir: 'webdev/smart-home-hub/Speaker', cmd: 'python', args: ['server.py'],          url: 'http://localhost:5000',  type: 'web',  desc: 'Smart home dashboard · Spotify · weather' },
 
@@ -79,50 +79,13 @@ app.get('/api/output/:id', (req, res) => {
 
 app.post('/api/launch/:id', (req, res) => {
   const p = PROJECTS.find(x => x.id === req.params.id);
-  if (!p)             return res.status(404).json({ error: 'unknown project' });
+  if (!p)              return res.status(404).json({ error: 'unknown project' });
   if (p.type === 'info') return res.json({ ok: true, info: true });
   if (procs.has(p.id))   return res.json({ ok: true, already: true });
-
   const cwd = path.join(SCRIPTS_DIR, p.dir);
   if (!fs.existsSync(cwd)) return res.status(400).json({ error: `dir not found: ${cwd}` });
-
-  const proc = spawn(p.cmd, p.args, {
-    cwd,
-    shell: IS_WIN,
-    windowsHide: p.type === 'cli',
-    env: { ...process.env, PYTHONUNBUFFERED: '1', FORCE_COLOR: '0' },
-  });
-
-  const state = { proc, lines: [], exitCode: null };
-  procs.set(p.id, state);
-
-  function handleStream(stream) {
-    stream.on('data', chunk => {
-      const text = chunk.toString().replace(/\r\n/g, '\n').replace(/\r/g, '\n');
-      for (const line of text.split('\n')) {
-        if (line === '' && text.endsWith('\n')) continue;
-        state.lines.push(line);
-        if (state.lines.length > 1000) state.lines.shift();
-      }
-      broadcast(p.id, { type: 'out', text });
-    });
-  }
-  if (proc.stdout) handleStream(proc.stdout);
-  if (proc.stderr) handleStream(proc.stderr);
-
-  proc.on('error', err => {
-    const msg = `[error] ${err.message}\n`;
-    state.lines.push(msg);
-    broadcast(p.id, { type: 'out', text: msg });
-  });
-
-  proc.on('close', code => {
-    state.exitCode = code;
-    broadcast(p.id, { type: 'exit', code });
-    procs.delete(p.id);
-  });
-
-  res.json({ ok: true, pid: proc.pid });
+  launchProject(p);
+  res.json({ ok: true });
 });
 
 app.post('/api/stop/:id', (req, res) => {
@@ -169,6 +132,48 @@ wss.on('connection', ws => {
   });
 });
 
+function launchProject(p) {
+  if (p.type === 'info' || p.type === 'gui') return;
+  if (procs.has(p.id)) return;
+  const cwd = path.join(SCRIPTS_DIR, p.dir);
+  if (!fs.existsSync(cwd)) return;
+  const proc = spawn(p.cmd, p.args, {
+    cwd,
+    shell: IS_WIN,
+    windowsHide: true,
+    env: { ...process.env, PYTHONUNBUFFERED: '1', FORCE_COLOR: '0', NO_TUNNEL: '1' },
+  });
+  const state = { proc, lines: [], exitCode: null };
+  procs.set(p.id, state);
+  function handleStream(stream) {
+    stream.on('data', chunk => {
+      const text = chunk.toString().replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+      for (const line of text.split('\n')) {
+        if (line === '' && text.endsWith('\n')) continue;
+        state.lines.push(line);
+        if (state.lines.length > 1000) state.lines.shift();
+      }
+      broadcast(p.id, { type: 'out', text });
+    });
+  }
+  if (proc.stdout) handleStream(proc.stdout);
+  if (proc.stderr) handleStream(proc.stderr);
+  proc.on('error', err => {
+    const msg = `[error] ${err.message}\n`;
+    state.lines.push(msg);
+    broadcast(p.id, { type: 'out', text: msg });
+  });
+  proc.on('close', code => {
+    state.exitCode = code;
+    broadcast(p.id, { type: 'exit', code });
+    procs.delete(p.id);
+    // auto-restart web services
+    if (p.type === 'web') setTimeout(() => launchProject(p), 3000);
+  });
+}
+
 server.listen(PORT, '0.0.0.0', () => {
   console.log(`\n  Portal: https://localhost:${PORT}\n`);
+  // Auto-launch all web and cli projects
+  setTimeout(() => PROJECTS.forEach(launchProject), 1000);
 });

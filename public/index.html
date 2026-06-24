@@ -37,6 +37,10 @@
   </div>
 
   <div class="header-right">
+    <a class="btn btn-broadcast" href="https://localhost:3001" target="_blank" title="Open TemuTalk broadcast">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3a4.237 4.237 0 0 0-6 0zm-4-4 2 2a7.074 7.074 0 0 1 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>
+      Broadcast
+    </a>
     <div class="stat-chip" id="running-chip">
       <div class="stat-dot"></div>
       <span id="running-label">0 running</span>
@@ -290,20 +294,28 @@ function cardHTML(p, col) {
   const typeLabel = (p.type || 'info').toUpperCase();
   const badgeCls  = 'badge-' + (p.type || 'info');
 
+  const openBtn = p.url ? `<a class="btn btn-open" href="${p.url}" target="_blank" onclick="event.stopPropagation()">
+    Open <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M19 19H5V5h7V3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>
+  </a>` : '';
   let actions = '';
   if (p.type === 'info') {
     actions = `<div class="card-info-note">
       <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
       Deploy to game folder to use
     </div>`;
+  } else if (p.type === 'web') {
+    actions = `${running ? `<button class="btn btn-stop" onclick="stop('${p.id}',event)">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h12v12H6z"/></svg> Stop
+      </button>` : `<button class="btn btn-launch" onclick="launch('${p.id}',event)">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg> Start
+      </button>`}
+      ${openBtn}`;
   } else if (running) {
     actions = `
       <button class="btn btn-stop" onclick="stop('${p.id}',event)">
         <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h12v12H6z"/></svg> Stop
       </button>
-      ${p.url ? `<a class="btn btn-open" href="${p.url}" target="_blank" onclick="event.stopPropagation()">
-        Open <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M19 19H5V5h7V3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>
-      </a>` : ''}`;
+      <button class="btn btn-logs" onclick="openTerm('${p.id}');event.stopPropagation()">Logs</button>`;
   } else {
     actions = `<button class="btn btn-launch" onclick="launch('${p.id}',event)">
       <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg> Launch
@@ -427,6 +439,17 @@ function toast(msg, type) {
 // ── Boot ──────────────────────────────────────────────────────────────────────
 connectWS();
 loadProjects().then(updateStats);
+// Refresh running states every 5s to pick up auto-started processes
+setInterval(async () => {
+  const fresh = await fetch('/api/projects').then(r => r.json());
+  let changed = false;
+  fresh.forEach(p => {
+    const wasRunning = runningSet.has(p.id);
+    if (p.running && !wasRunning) { runningSet.add(p.id); changed = true; }
+    if (!p.running && wasRunning) { runningSet.delete(p.id); changed = true; }
+  });
+  if (changed) { render(); updateStats(); }
+}, 5000);
 </script>
 </body>
 </html>

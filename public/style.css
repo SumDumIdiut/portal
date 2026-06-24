@@ -323,8 +323,12 @@ body.term-open main { padding-bottom: calc(var(--term-h) + 40px); }
 .btn-launch:hover { opacity: .88; }
 .btn-stop   { background: var(--red-dim); color: var(--red); border: 1px solid rgba(255,107,129,.2); }
 .btn-stop:hover { background: rgba(255,107,129,.22); }
-.btn-open   { background: var(--green-dim); color: var(--green); border: 1px solid rgba(62,245,168,.2); }
+.btn-open   { background: var(--green-dim); color: var(--green); border: 1px solid rgba(62,245,168,.2); text-decoration: none; }
 .btn-open:hover { background: rgba(62,245,168,.22); }
+.btn-logs   { background: var(--sky-dim); color: var(--sky); border: 1px solid rgba(66,200,255,.2); }
+.btn-logs:hover { background: rgba(66,200,255,.22); }
+.btn-broadcast { display:flex; align-items:center; gap:6px; padding:6px 14px; border-radius:8px; border:1px solid rgba(176,159,252,.25); background:rgba(176,159,252,.1); color:var(--primary); font-size:12px; font-weight:700; letter-spacing:.5px; text-decoration:none; transition:background .15s; }
+.btn-broadcast:hover { background:rgba(176,159,252,.2); }
 
 .card-info-note {
   display: flex; align-items: center; gap: 6px;
