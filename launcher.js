@@ -23,8 +23,10 @@ function findBin(name) {
   const ext      = IS_WIN ? '.exe' : '';
   // Check portal/bin first, then temutalk's bin
   for (const base of [DIR, path.join(DIR, '..', 'webdev', 'temutalk')]) {
-    const bundled = path.join(base, 'bin', platform, name + ext);
-    if (fs.existsSync(bundled)) return bundled;
+    for (const sub of [platform, '']) {
+      const bundled = path.join(base, 'bin', sub, name + ext);
+      if (fs.existsSync(bundled)) return bundled;
+    }
   }
   try {
     const cmd   = IS_WIN ? 'where' : 'which';
