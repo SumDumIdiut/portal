@@ -15,7 +15,7 @@ const CERT_F = path.join(__dirname, '.cert-cert.pem');
 const KEY_F  = path.join(__dirname, '.cert-key.pem');
 if (!fs.existsSync(CERT_F) || !fs.existsSync(KEY_F)) {
   const selfsigned = require('selfsigned');
-  const pems = selfsigned.generate([{ name: 'commonName', value: 'localhost' }], { days: 3650 });
+  const pems = selfsigned.generate([{ name: 'commonName', value: 'localhost' }], { days: 3650, keySize: 2048 });
   fs.writeFileSync(CERT_F, pems.cert);
   fs.writeFileSync(KEY_F,  pems.private);
 }
@@ -31,8 +31,7 @@ const PROJECTS = [
   // Python
   { id: 'discord-bot',   name: 'Discord Ollama Bot', cat: 'Python',   dir: 'python/discord-ollama-bot',     cmd: 'python', args: ['bot.py'],             type: 'cli', desc: 'Discord bot powered by local Ollama LLM' },
   { id: 'bullet-hell',   name: 'Bullet Hell',        cat: 'Python',   dir: 'python/bullet-hell',            cmd: 'python', args: ['Bullet Hell.py'],     type: 'gui', desc: 'Arcade bullet hell shooter' },
-  { id: 'cli-journal',   name: 'CLI Journal',        cat: 'Python',   dir: 'python/cli-journal',            cmd: 'python', args: ['Digital Ace.py'],     type: 'cli', desc: 'Command-line journal and tracker' },
-  { id: 'llm-router',    name: 'LLM Router',         cat: 'Python',   dir: 'python/llm-router',             cmd: 'python', args: ['smartformer.py'],     type: 'cli', desc: 'Adaptive LLM weight routing framework' },
+{ id: 'llm-router',    name: 'LLM Router',         cat: 'Python',   dir: 'python/llm-router',             cmd: 'python', args: ['smartformer.py'],     type: 'cli', desc: 'Adaptive LLM weight routing framework' },
   { id: 'manim',         name: 'Manim Animations',   cat: 'Python',   dir: 'python/manim-animations',       cmd: 'python', args: ['untitled 1.py'],      type: 'cli', desc: 'Mathematical animation renderer' },
   { id: 'celeste',       name: 'Celeste',            cat: 'Python',   dir: 'python/python-games',           cmd: 'python', args: ['Celeste.py'],         type: 'gui', desc: 'Celeste-inspired platformer' },
   { id: 'human-bench',   name: 'Human Benchmark',    cat: 'Python',   dir: 'python/python-games',           cmd: 'python', args: ['Human Benchmark.py'], type: 'cli', desc: 'Reaction time & memory benchmarks' },

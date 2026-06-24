@@ -55,7 +55,6 @@ clone "$SCRIPTS/webdev/git-forge"            git-forge
 clone "$SCRIPTS/webdev/smart-home-hub"       smart-home-hub
 clone "$SCRIPTS/python/discord-ollama-bot"   discord-ollama-bot
 clone "$SCRIPTS/python/bullet-hell"          bullet-hell
-clone "$SCRIPTS/python/cli-journal"          cli-journal
 clone "$SCRIPTS/python/llm-router"           llm-router
 clone "$SCRIPTS/python/manim-animations"     manim-animations
 clone "$SCRIPTS/python/python-games"         python-games

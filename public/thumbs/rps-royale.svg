@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 160">
+  <defs>
+    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1a0a00"/>
+      <stop offset="100%" stop-color="#2a1500"/>
+    </linearGradient>
+  </defs>
+  <rect width="320" height="160" fill="url(#g)"/>
+  <!-- Many small particles -->
+  <circle cx="60" cy="55" r="10" fill="rgba(255,107,129,.8)" stroke="rgba(255,107,129,.4)" stroke-width="1"/>
+  <text x="60" y="59" text-anchor="middle" font-family="sans-serif" font-size="11">✊</text>
+  <circle cx="120" cy="35" r="10" fill="rgba(62,245,168,.8)" stroke="rgba(62,245,168,.4)" stroke-width="1"/>
+  <text x="120" y="39" text-anchor="middle" font-family="sans-serif" font-size="11">✋</text>
+  <circle cx="180" cy="60" r="10" fill="rgba(66,200,255,.8)" stroke="rgba(66,200,255,.4)" stroke-width="1"/>
+  <text x="180" y="64" text-anchor="middle" font-family="sans-serif" font-size="11">✌️</text>
+  <circle cx="250" cy="40" r="10" fill="rgba(255,107,129,.8)" stroke="rgba(255,107,129,.4)" stroke-width="1"/>
+  <text x="250" y="44" text-anchor="middle" font-family="sans-serif" font-size="11">✊</text>
+  <circle cx="90" cy="100" r="10" fill="rgba(66,200,255,.8)" stroke="rgba(66,200,255,.4)" stroke-width="1"/>
+  <text x="90" y="104" text-anchor="middle" font-family="sans-serif" font-size="11">✌️</text>
+  <circle cx="210" cy="95" r="10" fill="rgba(62,245,168,.8)" stroke="rgba(62,245,168,.4)" stroke-width="1"/>
+  <text x="210" y="99" text-anchor="middle" font-family="sans-serif" font-size="11">✋</text>
+  <circle cx="155" cy="115" r="12" fill="rgba(255,220,80,.8)" stroke="rgba(255,220,80,.4)" stroke-width="1.5"/>
+  <text x="155" y="120" text-anchor="middle" font-family="sans-serif" font-size="14">⚔️</text>
+  <!-- Velocity lines -->
+  <line x1="50" y1="55" x2="25" y2="55" stroke="rgba(255,107,129,.3)" stroke-width="1" stroke-dasharray="3,2"/>
+  <line x1="120" y1="35" x2="95" y2="20" stroke="rgba(62,245,168,.3)" stroke-width="1" stroke-dasharray="3,2"/>
+  <line x1="250" y1="40" x2="270" y2="25" stroke="rgba(255,107,129,.3)" stroke-width="1" stroke-dasharray="3,2"/>
+  <!-- Counter display -->
+  <text x="160" y="155" text-anchor="middle" font-family="sans-serif" font-size="11" font-weight="700" fill="rgba(255,255,255,.4)" letter-spacing="2">RPS BATTLE ROYALE</text>
+</svg>
