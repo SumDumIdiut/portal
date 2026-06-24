@@ -26,7 +26,7 @@ const tlsOpts = { cert: fs.readFileSync(CERT_F), key: fs.readFileSync(KEY_F) };
 const PROJECTS = [
   // Web Apps
   { id: 'temutalk',      name: 'TemuTalk',          cat: 'Web Apps', dir: 'webdev/temutalk',               cmd: 'node',   args: ['server.js'],          url: '/cast',                  type: 'web',  desc: 'Smart display hub · Spotify · audio casting' },
-  { id: 'git-forge',     name: 'Git Forge',          cat: 'Web Apps', dir: 'webdev/git-forge',              cmd: 'node',   args: ['server.js'],          url: 'http://localhost:3000',  type: 'web',  desc: 'Local GitHub-style git manager' },
+  { id: 'git-forge',     name: 'Git Forge',          cat: 'Web Apps', dir: 'webdev/git-forge',              cmd: 'node',   args: ['server.js'],          url: '/forge',                 type: 'web',  desc: 'Local GitHub-style git manager' },
   { id: 'smart-home',    name: 'Smart Home Hub',     cat: 'Web Apps', dir: 'webdev/smart-home-hub/Speaker', cmd: 'python', args: ['server.py'],          url: 'http://localhost:5000',  type: 'web',  desc: 'Smart home dashboard · Spotify · weather' },
 
 ];
@@ -61,6 +61,14 @@ const temuProxy = createProxyMiddleware({
   ws: true,
 });
 app.use('/cast', temuProxy);
+
+const forgeProxy = createProxyMiddleware({
+  target: 'http://localhost:3000',
+  changeOrigin: true,
+  pathRewrite: { '^/forge': '' },
+  ws: true,
+});
+app.use('/forge', forgeProxy);
 
 app.use(express.static(path.join(__dirname, 'public')));
 
