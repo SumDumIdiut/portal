@@ -27,7 +27,7 @@ const PROJECTS = [
   // Web Apps
   { id: 'temutalk',      name: 'TemuTalk',          cat: 'Web Apps', dir: 'webdev/temutalk',               cmd: 'node',   args: ['server.js'],          url: '/cast',                  type: 'web',  desc: 'Smart display hub · Spotify · audio casting' },
   { id: 'git-forge',     name: 'Git Forge',          cat: 'Web Apps', dir: 'webdev/git-forge',              cmd: 'node',   args: ['server.js'],          url: '/forge',                 type: 'web',  desc: 'Local GitHub-style git manager' },
-  { id: 'smart-home',    name: 'Smart Home Hub',     cat: 'Web Apps', dir: 'webdev/smart-home-hub/Speaker', cmd: 'python', args: ['server.py'],          url: 'http://localhost:5000',  type: 'web',  desc: 'Smart home dashboard · Spotify · weather' },
+  { id: 'smart-home',    name: 'Smart Home Hub',     cat: 'Web Apps', dir: 'webdev/smart-home-hub/Speaker', cmd: 'python', args: ['server.py'],          url: '/home',                  type: 'web',  desc: 'Smart home dashboard · Spotify · weather' },
 
 ];
 
@@ -69,6 +69,14 @@ const forgeProxy = createProxyMiddleware({
   ws: true,
 });
 app.use('/forge', forgeProxy);
+
+const homeProxy = createProxyMiddleware({
+  target: 'http://localhost:5000',
+  changeOrigin: true,
+  pathRewrite: { '^/home': '' },
+  ws: true,
+});
+app.use('/home', homeProxy);
 
 app.use(express.static(path.join(__dirname, 'public')));
 
