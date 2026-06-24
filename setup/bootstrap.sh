@@ -53,7 +53,6 @@ clone "$SCRIPTS/portal"                      portal
 clone "$SCRIPTS/webdev/temutalk"             temutalk
 clone "$SCRIPTS/webdev/git-forge"            git-forge
 clone "$SCRIPTS/webdev/smart-home-hub"       smart-home-hub
-clone "$SCRIPTS/python/discord-ollama-bot"   discord-ollama-bot
 clone "$SCRIPTS/python/bullet-hell"          bullet-hell
 clone "$SCRIPTS/python/llm-router"           llm-router
 clone "$SCRIPTS/python/manim-animations"     manim-animations

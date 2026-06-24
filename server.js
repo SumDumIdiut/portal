@@ -29,7 +29,6 @@ const PROJECTS = [
   { id: 'smart-home',    name: 'Smart Home Hub',     cat: 'Web Apps', dir: 'webdev/smart-home-hub/Speaker', cmd: 'python', args: ['server.py'],          url: 'http://localhost:5000',  type: 'web',  desc: 'Smart home dashboard · Spotify · weather' },
 
   // Python
-  { id: 'discord-bot',   name: 'Discord Ollama Bot', cat: 'Python',   dir: 'python/discord-ollama-bot',     cmd: 'python', args: ['bot.py'],             type: 'cli', desc: 'Discord bot powered by local Ollama LLM' },
   { id: 'bullet-hell',   name: 'Bullet Hell',        cat: 'Python',   dir: 'python/bullet-hell',            cmd: 'python', args: ['Bullet Hell.py'],     type: 'gui', desc: 'Arcade bullet hell shooter' },
 { id: 'llm-router',    name: 'LLM Router',         cat: 'Python',   dir: 'python/llm-router',             cmd: 'python', args: ['smartformer.py'],     type: 'cli', desc: 'Adaptive LLM weight routing framework' },
   { id: 'manim',         name: 'Manim Animations',   cat: 'Python',   dir: 'python/manim-animations',       cmd: 'python', args: ['untitled 1.py'],      type: 'cli', desc: 'Mathematical animation renderer' },
