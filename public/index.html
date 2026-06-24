@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#08090f">
+  <title>CodeCade Portal</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'><rect width='40' height='40' rx='10' fill='%237c6cf8'/><text x='20' y='28' text-anchor='middle' font-family='sans-serif' font-weight='900' font-size='22' fill='white'>C</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<div id="bg">
+  <div class="blob b1"></div>
+  <div class="blob b2"></div>
+  <div class="blob b3"></div>
+</div>
+
+<header>
+  <div class="logo">
+    <svg width="28" height="28" viewBox="0 0 40 40">
+      <rect width="40" height="40" rx="10" fill="#7c6cf8"/>
+      <text x="20" y="28" text-anchor="middle" font-family="sans-serif" font-weight="900" font-size="22" fill="white">C</text>
+    </svg>
+    CodeCade
+    <span class="logo-tag">Portal</span>
+  </div>
+  <div class="spacer"></div>
+  <div class="server-status">
+    <div class="server-dot"></div>
+    <span id="running-count">0 running</span>
+  </div>
+</header>
+
+<div class="layout">
+  <aside id="sidebar"></aside>
+  <main id="main"></main>
+</div>
+
+<!-- Terminal panel -->
+<div id="term-panel">
+  <div class="term-bar">
+    <div class="term-title" id="term-title">Output</div>
+    <div class="term-pid" id="term-pid"></div>
+    <div class="spacer"></div>
+    <button class="term-close" onclick="closeTerm()">✕</button>
+  </div>
+  <div id="term-out"></div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ── State ─────────────────────────────────────────────────────────────────────
+let projects = [];
+let activeId = null;
+let ws = null;
+const runningSet = new Set();
+
+// ── Icons per project id ──────────────────────────────────────────────────────
+const ICONS = {
+  'temutalk':      '🔊',
+  'git-forge':     '🔨',
+  'smart-home':    '🏠',
+  'discord-bot':   '🤖',
+  'bullet-hell':   '🎮',
+  'cli-journal':   '📓',
+  'llm-router':    '🧠',
+  'manim':         '📐',
+  'celeste':       '❄️',
+  'human-bench':   '⚡',
+  'ascii-record':  '📺',
+  'rps-royale':    '⚔️',
+  'terminal-idle': '🏆',
+  'power-of-50':   '🎯',
+  'cuda-compute':  '⚙️',
+  'igtap-editor':  '🗺️',
+};
+
+// ── WebSocket ─────────────────────────────────────────────────────────────────
+function connectWS() {
+  ws = new WebSocket(`wss://${location.host}`);
+  ws.onopen = () => {
+    if (activeId) ws.send(JSON.stringify({ type: 'subscribe', id: activeId }));
+  };
+  ws.onmessage = e => {
+    try {
+      const msg = JSON.parse(e.data);
+      if (msg.type === 'out') appendTerm(msg.text);
+      if (msg.type === 'exit') {
+        runningSet.delete(activeId);
+        appendTerm(`\n[process exited${msg.code != null ? ' code ' + msg.code : ''}]\n`, 'sys');
+        refreshCards();
+      }
+    } catch {}
+  };
+  ws.onclose = () => setTimeout(connectWS, 2000);
+}
+
+function subscribe(id) {
+  activeId = id;
+  if (ws && ws.readyState === 1)
+    ws.send(JSON.stringify({ type: 'subscribe', id }));
+}
+
+// ── API ───────────────────────────────────────────────────────────────────────
+async function loadProjects() {
+  const data = await fetch('/api/projects').then(r => r.json());
+  projects = data;
+  data.forEach(p => { if (p.running) runningSet.add(p.id); });
+  render();
+}
+
+async function launch(id) {
+  const r = await fetch(`/api/launch/${id}`, { method: 'POST' }).then(r => r.json());
+  if (r.error) return toast(r.error, true);
+  if (r.info)  return toast('Deploy the plugin to the game folder to use it');
+  runningSet.add(id);
+  openTerm(id);
+  refreshCards();
+  toast('Launched');
+}
+
+async function stop(id, e) {
+  e.stopPropagation();
+  await fetch(`/api/stop/${id}`, { method: 'POST' });
+  runningSet.delete(id);
+  if (activeId === id) appendTerm('\n[stopped]\n', 'sys');
+  refreshCards();
+}
+
+// ── Render ────────────────────────────────────────────────────────────────────
+function render() {
+  renderSidebar();
+  renderMain();
+}
+
+function renderSidebar() {
+  const cats = [...new Set(projects.map(p => p.cat))];
+  document.getElementById('sidebar').innerHTML = cats.map(cat => {
+    const count = projects.filter(p => p.cat === cat).length;
+    return `<div class="aside-label">${cat}</div>
+    <button class="cat-btn" onclick="scrollTo('${cat}')" data-cat="${cat}">
+      ${cat} <span class="count">${count}</span>
+    </button>`;
+  }).join('');
+}
+
+function renderMain() {
+  const cats = [...new Set(projects.map(p => p.cat))];
+  document.getElementById('main').innerHTML = cats.map(cat => {
+    const ps = projects.filter(p => p.cat === cat);
+    return `<div class="section" id="cat-${cat.replace(/\s|\//g,'-')}">
+      <div class="section-title">${cat}</div>
+      <div class="cards">${ps.map(cardHTML).join('')}</div>
+    </div>`;
+  }).join('');
+  updateRunningCount();
+}
+
+function cardHTML(p) {
+  const running = runningSet.has(p.id);
+  const selected = activeId === p.id;
+  const badgeClass = `badge-${p.type || 'info'}`;
+  const typeLabel = (p.type || 'info').toUpperCase();
+  const actions = p.type === 'info'
+    ? `<span class="btn btn-info">Plugin</span>`
+    : running
+      ? `<button class="btn btn-stop" onclick="stop('${p.id}',event)">■ Stop</button>
+         ${p.url ? `<a class="btn btn-open" href="${p.url}" target="_blank">Open →</a>` : ''}`
+      : `<button class="btn btn-launch" onclick="launch('${p.id}')">▶ Launch</button>`;
+
+  return `<div class="card${running?' running':''}${selected?' selected':''}" onclick="selectCard('${p.id}')" id="card-${p.id}">
+    <div class="card-top">
+      <div class="card-icon">${ICONS[p.id] || '📦'}</div>
+      <div class="card-info">
+        <div class="card-name">${p.name}</div>
+        <div class="card-desc">${p.desc}</div>
+      </div>
+    </div>
+    <div class="card-meta">
+      <span class="badge ${badgeClass}">${typeLabel}</span>
+      <div class="status-dot${running?' on':''}"></div>
+      <span class="status-text${running?' on':''}">${running ? 'Running' : 'Stopped'}</span>
+    </div>
+    <div class="card-actions">${actions}</div>
+  </div>`;
+}
+
+function refreshCards() {
+  updateRunningCount();
+  projects.forEach(p => {
+    const el = document.getElementById(`card-${p.id}`);
+    if (!el) return;
+    el.outerHTML = cardHTML(p);
+  });
+}
+
+function updateRunningCount() {
+  document.getElementById('running-count').textContent =
+    runningSet.size === 0 ? '0 running' :
+    runningSet.size === 1 ? '1 running' : `${runningSet.size} running`;
+}
+
+// ── Terminal ──────────────────────────────────────────────────────────────────
+function openTerm(id) {
+  const p = projects.find(x => x.id === id);
+  document.getElementById('term-title').textContent = p ? p.name : id;
+  document.getElementById('term-out').innerHTML = '';
+  document.getElementById('term-panel').classList.add('open');
+  subscribe(id);
+  // Load existing output
+  fetch(`/api/output/${id}`).then(r => r.json()).then(d => {
+    if (d.lines.length) appendTerm(d.lines.join('\n') + '\n');
+  });
+}
+
+function closeTerm() {
+  document.getElementById('term-panel').classList.remove('open');
+  activeId = null;
+}
+
+function selectCard(id) {
+  if (activeId === id) { closeTerm(); return; }
+  activeId = id;
+  openTerm(id);
+  document.querySelectorAll('.card').forEach(el => el.classList.remove('selected'));
+  const el = document.getElementById(`card-${id}`);
+  if (el) el.classList.add('selected');
+}
+
+function appendTerm(text, cls) {
+  const out = document.getElementById('term-out');
+  const span = document.createElement('span');
+  if (cls) span.className = cls;
+  span.textContent = text;
+  out.appendChild(span);
+  out.scrollTop = out.scrollHeight;
+}
+
+function scrollTo(cat) {
+  const el = document.getElementById(`cat-${cat.replace(/\s|\//g,'-')}`);
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.toggle('active', b.dataset.cat === cat));
+}
+
+// ── Toast ─────────────────────────────────────────────────────────────────────
+let toastTimer;
+function toast(msg, err) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.style.color = err ? 'var(--red)' : 'var(--text)';
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2500);
+}
+
+// ── Boot ──────────────────────────────────────────────────────────────────────
+connectWS();
+loadProjects();
+</script>
+</body>
+</html>

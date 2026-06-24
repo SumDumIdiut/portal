@@ -1,0 +1,4 @@
+node_modules/
+.cert-cert.pem
+.cert-key.pem
+.cloudflared/config.yml
