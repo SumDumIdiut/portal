@@ -26,7 +26,7 @@ const PROJECTS = [
   // Web Apps
   { id: 'temutalk',      name: 'TemuTalk',          cat: 'Web Apps', dir: 'webdev/temutalk',               cmd: 'node',   args: ['server.js'],          url: 'https://cast.codecade.co.za',  type: 'web',  desc: 'Smart display hub · Spotify · audio casting' },
   { id: 'git-forge',     name: 'Git Forge',          cat: 'Web Apps', dir: 'webdev/git-forge',              cmd: 'node',   args: ['server.js'],          url: 'https://forge.codecade.co.za', type: 'web',  desc: 'Local GitHub-style git manager' },
-  { id: 'smart-home',    name: 'Smart Home Hub',     cat: 'Web Apps', dir: 'webdev/smart-home-hub/Speaker', cmd: 'python', args: ['server.py'],          url: 'https://home.codecade.co.za',  type: 'web',  desc: 'Smart home dashboard · Spotify · weather' },
+  { id: 'smart-home',    name: 'Smart Home Hub',     cat: 'Web Apps', dir: 'webdev/smart-home-hub/Speaker', cmd: IS_WIN ? 'python' : 'python3', args: ['server.py'],          url: 'https://home.codecade.co.za',  type: 'web',  desc: 'Smart home dashboard · Spotify · weather' },
 
 ];
 
