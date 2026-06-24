@@ -5,7 +5,6 @@ const { WebSocketServer } = require('ws');
 const { spawn } = require('child_process');
 const fs   = require('fs');
 const path = require('path');
-const { createProxyMiddleware } = require('http-proxy-middleware');
 
 const PORT        = 4000;
 const SCRIPTS_DIR = path.join(__dirname, '..');
@@ -25,9 +24,9 @@ const tlsOpts = { cert: fs.readFileSync(CERT_F), key: fs.readFileSync(KEY_F) };
 // ── Project definitions ───────────────────────────────────────────────────────
 const PROJECTS = [
   // Web Apps
-  { id: 'temutalk',      name: 'TemuTalk',          cat: 'Web Apps', dir: 'webdev/temutalk',               cmd: 'node',   args: ['server.js'],          url: '/cast',                  type: 'web',  desc: 'Smart display hub · Spotify · audio casting' },
-  { id: 'git-forge',     name: 'Git Forge',          cat: 'Web Apps', dir: 'webdev/git-forge',              cmd: 'node',   args: ['server.js'],          url: '/forge',                 type: 'web',  desc: 'Local GitHub-style git manager' },
-  { id: 'smart-home',    name: 'Smart Home Hub',     cat: 'Web Apps', dir: 'webdev/smart-home-hub/Speaker', cmd: 'python', args: ['server.py'],          url: '/home',                  type: 'web',  desc: 'Smart home dashboard · Spotify · weather' },
+  { id: 'temutalk',      name: 'TemuTalk',          cat: 'Web Apps', dir: 'webdev/temutalk',               cmd: 'node',   args: ['server.js'],          url: 'https://cast.codecade.co.za',  type: 'web',  desc: 'Smart display hub · Spotify · audio casting' },
+  { id: 'git-forge',     name: 'Git Forge',          cat: 'Web Apps', dir: 'webdev/git-forge',              cmd: 'node',   args: ['server.js'],          url: 'https://forge.codecade.co.za', type: 'web',  desc: 'Local GitHub-style git manager' },
+  { id: 'smart-home',    name: 'Smart Home Hub',     cat: 'Web Apps', dir: 'webdev/smart-home-hub/Speaker', cmd: 'python', args: ['server.py'],          url: 'https://home.codecade.co.za',  type: 'web',  desc: 'Smart home dashboard · Spotify · weather' },
 
 ];
 
@@ -52,31 +51,6 @@ function broadcast(id, msg) {
 const app = express();
 app.use(express.json());
 
-// Proxy /cast/* → TemuTalk on port 3001
-const temuProxy = createProxyMiddleware({
-  target: 'https://localhost:3001',
-  changeOrigin: true,
-  secure: false,
-  pathRewrite: { '^/cast': '' },
-  ws: true,
-});
-app.use('/cast', temuProxy);
-
-const forgeProxy = createProxyMiddleware({
-  target: 'http://localhost:3000',
-  changeOrigin: true,
-  pathRewrite: { '^/forge': '' },
-  ws: true,
-});
-app.use('/forge', forgeProxy);
-
-const homeProxy = createProxyMiddleware({
-  target: 'http://localhost:5000',
-  changeOrigin: true,
-  pathRewrite: { '^/home': '' },
-  ws: true,
-});
-app.use('/home', homeProxy);
 
 app.use(express.static(path.join(__dirname, 'public')));
 

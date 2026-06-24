@@ -57,15 +57,22 @@ function writeCfConfig() {
   const certFile   = path.join(cfDir, 'cert.pem');
   const configFile = path.join(DIR, '.cloudflared', 'config.yml');
   fs.mkdirSync(path.join(DIR, '.cloudflared'), { recursive: true });
+  const ingress = [
+    { host: CF_DOMAIN,              service: `https://localhost:${PORT}`, tls: true  },
+    { host: `cast.${CF_DOMAIN}`,   service: 'https://localhost:3001',     tls: true  },
+    { host: `forge.${CF_DOMAIN}`,  service: 'http://localhost:3000',      tls: false },
+    { host: `home.${CF_DOMAIN}`,   service: 'http://localhost:5000',      tls: false },
+  ];
+  const ingressYml = ingress.map(i =>
+    `  - hostname: ${i.host}\n    service: ${i.service}` +
+    (i.tls ? `\n    originRequest:\n      noTLSVerify: true` : '')
+  ).join('\n') + '\n  - service: http_status:404';
+
   fs.writeFileSync(configFile, [
     `tunnel: ${tunnelId}`,
     `credentials-file: ${credsFile}`,
     `ingress:`,
-    `  - hostname: ${CF_DOMAIN}`,
-    `    service: https://localhost:${PORT}`,
-    `    originRequest:`,
-    `      noTLSVerify: true`,
-    `  - service: http_status:404`,
+    ingressYml,
     '',
   ].join('\n'));
   return { tunnelId, configFile, certFile: fs.existsSync(certFile) ? certFile : null };
